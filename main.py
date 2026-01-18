@@ -1,5 +1,45 @@
+import gradio as gr
+
+def chat(history):
+    last_message = history[-1]["content"]
+    prior = history[:-1]
+    answer, context = "Hi", "Hello"
+    history.append({"role": "assistant", "content": answer})
+    return history, context
+
 def main():
-    print("Hello from insurellm-rag-agent!")
+    def put_message_in_chatbot(message, history):
+        return "", history + [{"role": "user", "content": message}]
+
+    theme = gr.themes.Monochrome(primary_hue="blue", secondary_hue="gray", neutral_hue="zinc",font=["Inter", "system-ui", "sans-serif"])
+
+    with gr.Blocks(title="Insurellm Expert Assistant") as ui:
+        gr.Markdown("# 🏢 Insurellm Expert Assistant\nAsk me anything about Insurellm!")
+
+        with gr.Row():
+            with gr.Column(scale=1):
+                chatbot = gr.Chatbot(
+                    label="💬 Conversation", height=500
+                )
+                message = gr.Textbox(
+                    label="Your Question",
+                    placeholder="Ask anything about Insurellm...",
+                    show_label=True,
+                )
+
+            with gr.Column(scale=1):
+                context_markdown = gr.Markdown(
+                    label="📚 Retrieved Context",
+                    value="*Retrieved context will appear here*",
+                    container=True,
+                    height=500,
+                )
+
+        message.submit(
+            put_message_in_chatbot, inputs=[message, chatbot], outputs=[message, chatbot]
+        ).then(chat, inputs=chatbot, outputs=[chatbot, context_markdown])
+
+    ui.launch(inbrowser=True,theme=theme)
 
 
 if __name__ == "__main__":
