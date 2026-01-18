@@ -1,11 +1,12 @@
 import gradio as gr
+from answer import answer_question
 
 def chat(history):
     last_message = history[-1]["content"]
     prior = history[:-1]
-    answer, context = "Hi", "Hello"
+    answer = answer_question(last_message)
     history.append({"role": "assistant", "content": answer})
-    return history, context
+    return history
 
 def main():
     def put_message_in_chatbot(message, history):
@@ -27,17 +28,17 @@ def main():
                     show_label=True,
                 )
 
-            with gr.Column(scale=1):
-                context_markdown = gr.Markdown(
-                    label="📚 Retrieved Context",
-                    value="*Retrieved context will appear here*",
-                    container=True,
-                    height=500,
-                )
+            # with gr.Column(scale=1):
+            #     context_markdown = gr.Markdown(
+            #         label="📚 Retrieved Context",
+            #         value="*Retrieved context will appear here*",
+            #         container=True,
+            #         height=500,
+            #     )
 
         message.submit(
             put_message_in_chatbot, inputs=[message, chatbot], outputs=[message, chatbot]
-        ).then(chat, inputs=chatbot, outputs=[chatbot, context_markdown])
+        ).then(chat, inputs=chatbot, outputs=chatbot)
 
     ui.launch(inbrowser=True,theme=theme)
 
