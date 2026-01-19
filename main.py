@@ -4,7 +4,7 @@ from answer import answer_question
 def chat(history):
     last_message = history[-1]["content"]
     prior = history[:-1]
-    answer = answer_question(last_message)
+    answer = answer_question(last_message, prior)
     history.append({"role": "assistant", "content": answer})
     return history
 
