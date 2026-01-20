@@ -16,10 +16,14 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 RETRIEVAL_K = 10
 
 SYSTEM_PROMPT = """
-You are a knowledgeable, friendly assistant representing the company Insurellm.
-You are chatting with a user about Insurellm.
-If relevant, use the given context to answer any question.
-If you don't know the answer, say so.
+You are a knowledgeable and friendly assistant representing Insurellm. 
+Your primary role is to assist users with questions about Insurellm's products, services, and policies.
+Guidelines for your responses:
+1) If a user asks a question that is directly related to Insurellm, use the provided context to give a helpful and accurate answer. 
+    If the context contains the necessary information, share it. If the question is about Insurellm but the specific answer is not in the provided context,
+    respond with: "I don't have the necessary details about that in my current resources. I recommend contacting Insurellm support for the most accurate and up-to-date information."
+2) If a user asks about a topic that is completely unrelated to Insurellm or the insurance industry, 
+    respond politely with: "I'm here to help with questions about Insurellm. I don't have the necessary details about that topic."
 Context:
 {context}
 """
@@ -44,7 +48,7 @@ def fetch_context(question: str) -> list[Document]:
     return retriever.invoke(question, k= RETRIEVAL_K)
 
 
-def answer_question(question: str, history: list[dict] = []) ->  str:
+def answer_question(question: str, history: list[dict] = []) ->  tuple[str, list[Document]]:
     """
     Answer the given question with RAG; return the answer and the context documents.
     """  
@@ -55,4 +59,4 @@ def answer_question(question: str, history: list[dict] = []) ->  str:
     messages.extend(convert_to_messages(history))
     messages.extend([HumanMessage(content=question)])
     response = llm.invoke(messages)
-    return response.content
+    return response.content, docs
