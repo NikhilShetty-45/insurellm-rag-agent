@@ -82,11 +82,6 @@ insurellm-rag-agent/
    ```bash
    uv sync
    ```
-   
-   Or with pip:
-   ```bash
-   pip install -r requirements.txt
-   ```
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
